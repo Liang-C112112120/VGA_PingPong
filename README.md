@@ -15,4 +15,5 @@ VGA_Count：VGA時脈掃描計數器，VGA先掃描水平像素再掃描垂直�
 VGA_Display：設定顯示的畫面元素，我在上面畫了背景、球檯，也針對VGA_ball_x解析出的圓球x軸位置來畫出圓球，再透過4bit的RGB值來設定元素顏色。  
 我們平常都習慣使用8bit的RGB值，所以我使用工具網站來做轉換，才將球檯的棕色正確顯示出來。  
   
-![IMG_1999](https://github.com/user-attachments/assets/12f0bf5b-5cbc-412a-8d6c-f3c0dae8933b)
+![IMG_1999](https://github.com/user-attachments/assets/12f0bf5b-5cbc-412a-8d6c-f3c0dae8933b)  
+Demo影片：https://drive.google.com/file/d/1-e8io-AeQbsUZK66NtU9cvIqXFYBEO-g/view?usp=drive_link
