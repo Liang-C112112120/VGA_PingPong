@@ -39,7 +39,7 @@ architecture Behavioral of VGA_PingPong is
     signal h_count           : integer range 0 to 799 := 0;
     signal v_count           : integer range 0 to 524 := 0;
     signal x, y              : integer range -1000 to 1000;
-    signal ball_x            : integer := 120; --∑|≈‹
+    signal ball_x            : integer := 120; --ÊúÉËÆä
     signal ball_y            : integer := 240;
     
     type STATE_TYPE is (MovingR, MovingL, Lwin, Rwin);
@@ -69,24 +69,24 @@ begin
             state <= MovingR;
         elsif i_clk'event and i_clk='1' then
              case state is
-                when MovingR => --S0 •k≤æ§§
+                when MovingR => --S0 Âè≥Áßª‰∏≠
                     if (led_r < "00000001") or (led_r > "00000001" and i_swR = '1') then
                         state <= Lwin;
-                    elsif led_r(0)='1' and i_swR ='1' then --•k•¥®Ï then
+                    elsif led_r(0)='1' and i_swR ='1' then --Âè≥ÊâìÂà∞ then
                         state <= MovingL;
                     end if;
-                when MovingL => --S1 •™≤æ§§
+                when MovingL => --S1 Â∑¶Áßª‰∏≠
                     if (led_r = "00000000") or (led_r < "10000000" and i_swL = '1') then
                         state <= Rwin;
-                    elsif led_r(7)='1' and i_swL ='1' then --•™•¥®Ï then
+                    elsif led_r(7)='1' and i_swL ='1' then --Â∑¶ÊâìÂà∞ then
                        state <= MovingR;
                     end if;
                 when Lwin =>    --S3 
-                    if i_swL ='1' then --•™µo≤y
+                    if i_swL ='1' then --Â∑¶ÁôºÁêÉ
                        state <= MovingR;
                  end if;
                 when Rwin =>    --S2
-                    if i_swR ='1' then --•kµo≤y
+                    if i_swR ='1' then --Âè≥ÁôºÁêÉ
                        state <= MovingL;
                     end if;
                 when others => 
@@ -102,14 +102,14 @@ begin
 		elsif pp_clk'event and pp_clk='1' then
 			prev_state <= state;
 			case state is
-				when MovingR => --S0 •k≤æ§§
+				when MovingR => --S0 Âè≥Áßª‰∏≠
 					if (prev_state = Lwin) then
 						led_r <= "10000000";
 					elsif (prev_state = MovingL or prev_state = MovingR) then
 						led_r(7         ) <= '0';
 						led_r(6 downto 0) <= led_r(7 downto 1); --led_r >> 1
 					end if;          
-				when MovingL => --S1 •™≤æ§§
+				when MovingL => --S1 Â∑¶Áßª‰∏≠
 					if (prev_state = Rwin) then
 						led_r <= "00000001";
 					elsif (prev_state = MovingR or prev_state = MovingL) then            
@@ -118,13 +118,11 @@ begin
 					end if;
 				when Lwin =>    --S3 
 					if (prev_state = MovingR) then
-						led_r(7 downto 4) <= scoreL;
-						led_r(3 downto 0) <= scoreR;
+						led_r <= "11110000";
 					end if;
 				when Rwin =>    --S2
 					if (prev_state = MovingL) then
-					    led_r(7 downto 4) <= scoreL;
-						led_r(3 downto 0) <= scoreR;
+						led_r <= "00001111";
 					end if;
 				when others => 
 					null;
@@ -138,9 +136,9 @@ begin
 			scoreL <= "0000";
 		elsif pp_clk'event and pp_clk='1' then
 			case state is
-				when MovingR => --S0 •k≤æ§§
+				when MovingR => --S0 Âè≥Áßª‰∏≠
 					null;
-				when MovingL => --S1 •™≤æ§§
+				when MovingL => --S1 Â∑¶Áßª‰∏≠
 					null;
 				when Lwin =>    --S3 
 					if (prev_state = MovingR) then
@@ -160,9 +158,9 @@ begin
 			scoreR <= "0000";
 		elsif pp_clk'event and pp_clk='1' then
 			case state is
-				when MovingR => --S0 •k≤æ§§
+				when MovingR => --S0 Âè≥Áßª‰∏≠
 					null;
-				when MovingL => --S1 •™≤æ§§
+				when MovingL => --S1 Â∑¶Áßª‰∏≠
 					null;
 				when Lwin =>    --S3 
 					null; 
@@ -175,27 +173,6 @@ begin
 			end case;    
 		end if;
 	end process;
-	
-	VGA_ball_x:process(led_r)
-    begin
-        case led_r is
-            when "10000000" => ball_x <= 120; -- LED7
-            when "01000000" => ball_x <= 180;
-            when "00100000" => ball_x <= 240;
-            when "00010000" => ball_x <= 300;
-            when "00001000" => ball_x <= 360;
-            when "00000100" => ball_x <= 420;
-            when "00000010" => ball_x <= 480;
-            when "00000001" => ball_x <= 540; -- LED0
-            when others => null;
-        end case;
-        
-        if (state = Lwin) then
-            ball_x <= 120; --•™ƒπ µo≤y
-        elsif (state = Rwin) then
-            ball_x <= 540; --•kƒπ µo≤y
-        end if;
-    end process;
 
     VGA_Count:process(vga_clk, i_rst)
     begin
@@ -236,24 +213,32 @@ begin
 
             if (x >= 0 and x < H_ACTIVE_VIDEO and y >= 0 and y < V_ACTIVE_VIDEO) then
 
-                if (x >= 0 and x < 640 and y >= 0 and y < 480) then --≠I¥∫
+                if (x >= 0 and x < 640 and y >= 0 and y < 480) then --ËÉåÊôØ
                     o_red <= "0000";
                     o_green <= "0000";
                     o_blue <= "1111";
                 end if;
                             
-                if (x >= 90 and x < 570 and y >= 300 and y < 350) then --≤y¬i
+                if (x >= 90 and x < 570 and y >= 300 and y < 350) then --ÁêÉÊ™Ø
                     o_red <= "1010";
                     o_green <= "0010";
                     o_blue <= "0010";
                 end if;
-                
-                if ((x - ball_x)*(x - ball_x) + (y - ball_y)*(y - ball_y) <= 30*30) then --µe≤y
-                    o_red <= "1111";
-                    o_green <= "1111";
-                    o_blue <= "1111";
-                end if;
 
+                for i in 0 to 7 loop
+                    if ((x - (120 + i*60))*(x - (120 + i*60)) + (y - 240)*(y - 240) <= 30*30) then --ÁêÉ
+                        if (led_r(7 - i) = '1') then
+                            o_red <= "1111";  --È°ØÁ§∫Á¥ÖËâ≤
+                            o_green <= "0000";
+                            o_blue <= "0000";
+                        else
+                            o_red <= "1111"; --È°ØÁ§∫ÁôΩËâ≤
+                            o_green <= "1111";
+                            o_blue <= "1111";
+                        end if;
+                    end if;
+                end loop; 
+                                             
             end if;
         end if;
     end process;
